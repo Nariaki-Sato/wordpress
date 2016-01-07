@@ -16,10 +16,9 @@ ADD wp-config.php /app/wp-config.php
 RUN chown -R www-data:www-data /app/wp-content /var/www/html
 
 # Add database setup script
-ADD create_mysql_admin_user.sh /create_mysql_admin_user.sh
-ADD create_db.sh /create_db.sh
+# See https://github.com/tutumcloud/lamp/blob/master/create_mysql_admin_user.sh
+ADD mysql-setup.sh /mysql-setup.sh
 RUN chmod +x /*.sh
-
 
 EXPOSE 80 3306
 CMD ["/run.sh"]
