@@ -1,39 +1,49 @@
-tutum-docker-wordpress
-======================
+# Docker WordPress
 
-[![Deploy to Tutum](https://s.tutum.co/deploy-to-tutum.svg)](https://dashboard.tutum.co/stack/deploy/)
+## Build & Run WordPress Docker image
 
-Out-of-the-box Wordpress docker image
+```
+$ git clone https://github.com/rakuishi/wordpress.git docker-wordpress
+$ cd docker-wordpress
+$ docker build -t docker-wordpress .
+$ docker run -d -p 80:80 -v $(pwd):/data-share --name=docker-wordpress docker-wordpress
+$ docker-machine ip default
+192.168.99.100
+$ open http://192.168.99.100/
+```
 
+## Extracting WordPress data and wp-content/
 
-Usage
------
+```
+$ docker exec docker-wordpress sh -c "mysqldump -u root wordpress > /data-share/dump.sql"
+$ mkdir public_html
+$ docker exec docker-wordpress sh -c "cp -r /app/wp-content/ /data-share/public_html/"
+```
 
-To create the image `tutum/wordpress`, execute the following command on the tutum-docker-wordpress folder:
+## Uncommenting for using extracted data
 
-	docker build -t tutum/wordpress .
+Dockerfile:
 
-You can now push your new image to the registry:
+```
+# ADD public_html/wp-content /app/wp-content
+```
 
-	docker push tutum/wordpress
+mysql-setup.sh:
 
+```
+# mysql -uroot wordpress < /dump.sql
+```
 
-Running your Wordpress docker image
------------------------------------
+## Rebuild & Run WordPress with user’s WordPress data
 
-Start your image:
+```
+$ docker rm -f docker-wordpress
+$ docker rmi docker-wordpress
+$ docker build -t docker-wordpress .
+$ docker run -d -p 80:80 -v $(pwd)/public_html/wp-content:/app/wp-content/ -v $(pwd)/dump.sql:/dump.sql --name=docker-wordpress docker-wordpress
+```
 
-	docker run -d -p 80:80 tutum/wordpress
+## Thanks
 
-Test your deployment:
-
-	curl http://localhost/
-
-You can now start configuring your Wordpress container!
-
-
-More information
-----------------
-
-For details on how to access the bundled MySQL Server, set specific passwords or disable .htaccess,
-please visit the [tutum/lamp repository on github](https://github.com/tutumcloud/tutum-docker-lamp)
+* https://github.com/tutumcloud/wordpress
+* http://www.slideshare.net/mookjp/dockerword-press
