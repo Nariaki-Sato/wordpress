@@ -12,7 +12,7 @@ RUN rm -fr /app && git clone --depth=1 https://github.com/WordPress/WordPress.gi
 # Configure Wordpress to connect to local DB
 ADD wp-config.php /app/wp-config.php
 ADD .htaccess /app/.htaccess
-# ADD public_html/wp-content /app/wp-content
+ADD public_html/wp-content /app/wp-content
 
 # Modify permissions to allow plugin upload
 RUN chown -R www-data:www-data /app/wp-content /var/www/html
